@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Aircon IR",
+        "description": "Configure the climate entity that sends generated IR commands through a Home Assistant remote entity.",
+        "data": {
+          "name": "Name",
+          "remote_entity_id": "Remote entity",
+          "default_temperature": "Default temperature",
+          "default_fan_mode": "Default fan mode",
+          "min_temp": "Minimum temperature",
+          "max_temp": "Maximum temperature",
+          "repeats": "Repeats"
+        }
+      }
+    },
+    "error": {
+      "invalid_temperature_range": "The minimum temperature must be lower than the maximum temperature.",
+      "default_temperature_out_of_range": "The default temperature must be within the configured range."
+    },
+    "abort": {
+      "already_configured": "This remote entity is already configured."
+    }
+  }
+}
