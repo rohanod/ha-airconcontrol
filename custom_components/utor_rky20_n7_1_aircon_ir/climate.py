@@ -1,4 +1,4 @@
-"""Climate platform for Aircon IR."""
+"""Climate platform for Go-On UTOR-RKY20-N7-1 Aircon IR."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Aircon IR climate entities."""
+    """Set up Go-On UTOR-RKY20-N7-1 Aircon IR climate entities."""
     async_add_entities([AirconIrClimate(hass, entry)])
 
 
@@ -76,8 +76,8 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         return {
             "identifiers": {(DOMAIN, self._entry.entry_id)},
             "name": self._entry.data[CONF_NAME],
-            "manufacturer": "Aircon IR",
-            "model": "Cool Mode IR",
+            "manufacturer": "Go-On",
+            "model": "UTOR-RKY20-N7-1",
         }
 
     async def async_added_to_hass(self) -> None:

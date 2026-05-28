@@ -1,6 +1,6 @@
-"""Constants for the Aircon IR integration."""
+"""Constants for the Go-On UTOR-RKY20-N7-1 Aircon IR integration."""
 
-DOMAIN = "aircon_ir"
+DOMAIN = "utor_rky20_n7_1_aircon_ir"
 
 CONF_DEFAULT_FAN_MODE = "default_fan_mode"
 CONF_DEFAULT_TEMPERATURE = "default_temperature"
@@ -12,7 +12,7 @@ CONF_REPEATS = "repeats"
 DEFAULT_FAN_MODE = "low"
 DEFAULT_MAX_TEMP = 30
 DEFAULT_MIN_TEMP = 16
-DEFAULT_NAME = "Aircon IR"
+DEFAULT_NAME = "Go-On UTOR-RKY20-N7-1 Aircon IR"
 DEFAULT_REPEATS = 1
 DEFAULT_TEMPERATURE = 23
 

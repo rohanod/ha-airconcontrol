@@ -1,6 +1,6 @@
-# Aircon IR
+# Go-On UTOR-RKY20-N7-1 Aircon IR
 
-Home Assistant custom climate integration for a cool-only air conditioner controlled by generated Broadlink IR commands.
+Home Assistant custom climate integration for a Go-On UTOR-RKY20-N7-1 cool-only air conditioner controlled by generated Broadlink IR commands.
 
 This integration does not import or use the Python `broadlink` package. It sends generated Broadlink learned-code payloads through Home Assistant's existing `remote.send_command` service, so it works with the proper Broadlink remote entity created by Home Assistant.
 
@@ -18,12 +18,12 @@ This integration does not import or use the Python `broadlink` package. It sends
 
 1. Add this repository to HACS as a custom repository.
 2. Choose category `Integration`.
-3. Install `Aircon IR`.
+3. Install `Go-On UTOR-RKY20-N7-1 Aircon IR`.
 4. Restart Home Assistant.
 
 ### Manual
 
-Copy `custom_components/aircon_ir` into your Home Assistant `custom_components` directory and restart Home Assistant.
+Copy `custom_components/utor_rky20_n7_1_aircon_ir` into your Home Assistant `custom_components` directory and restart Home Assistant.
 
 ## Configuration
 
@@ -31,7 +31,7 @@ Before adding this integration, configure your Broadlink device in Home Assistan
 
 Then go to:
 
-`Settings` -> `Devices & services` -> `Add integration` -> `Aircon IR`
+`Settings` -> `Devices & services` -> `Add integration` -> `Go-On UTOR-RKY20-N7-1 Aircon IR`
 
 Choose the Broadlink remote entity and defaults:
 

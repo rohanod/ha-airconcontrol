@@ -1,4 +1,4 @@
-"""Config flow for Aircon IR."""
+"""Config flow for Go-On UTOR-RKY20-N7-1 Aircon IR."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ from .const import (
 
 
 class AirconIrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle an Aircon IR config flow."""
+    """Handle a Go-On UTOR-RKY20-N7-1 Aircon IR config flow."""
 
     VERSION = 1
 

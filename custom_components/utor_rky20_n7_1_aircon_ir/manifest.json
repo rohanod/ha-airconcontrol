@@ -1,0 +1,10 @@
+{
+  "domain": "utor_rky20_n7_1_aircon_ir",
+  "name": "Go-On UTOR-RKY20-N7-1 Aircon IR",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/rohanod/ha-airconcontrol",
+  "iot_class": "assumed_state",
+  "requirements": [],
+  "version": "0.1.0"
+}

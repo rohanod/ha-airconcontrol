@@ -1,4 +1,4 @@
-"""Aircon IR integration."""
+"""Go-On UTOR-RKY20-N7-1 Aircon IR integration."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ PLATFORMS = [Platform.CLIMATE]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Aircon IR from a config entry."""
+    """Set up Go-On UTOR-RKY20-N7-1 Aircon IR from a config entry."""
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

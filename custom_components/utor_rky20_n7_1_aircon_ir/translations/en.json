@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Aircon IR",
+        "title": "Go-On UTOR-RKY20-N7-1 Aircon IR",
         "description": "Configure the climate entity that sends generated IR commands through a Home Assistant remote entity.",
         "data": {
           "name": "Name",
