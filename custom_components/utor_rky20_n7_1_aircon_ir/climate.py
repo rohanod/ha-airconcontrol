@@ -122,14 +122,22 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set HVAC mode."""
         if hvac_mode == HVACMode.COOL:
-            self._attr_hvac_mode = HVACMode.COOL
-            await self._async_send(COMMAND_SET)
+            await self.async_turn_on()
         elif hvac_mode == HVACMode.OFF:
-            await self._async_send(COMMAND_POWER_OFF)
-            self._attr_hvac_mode = HVACMode.OFF
+            await self.async_turn_off()
         else:
             raise ValueError(f"Unsupported HVAC mode: {hvac_mode}")
 
+    async def async_turn_on(self) -> None:
+        """Turn on the air conditioner in cool mode."""
+        self._attr_hvac_mode = HVACMode.COOL
+        await self._async_send(COMMAND_SET)
+        self.async_write_ha_state()
+
+    async def async_turn_off(self) -> None:
+        """Turn off the air conditioner."""
+        await self._async_send(COMMAND_POWER_OFF)
+        self._attr_hvac_mode = HVACMode.OFF
         self.async_write_ha_state()
 
     async def _async_send(self, command: str) -> None:
