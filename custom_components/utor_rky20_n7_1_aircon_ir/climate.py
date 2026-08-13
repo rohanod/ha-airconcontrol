@@ -48,7 +48,10 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
     _attr_hvac_modes = [HVACMode.COOL, HVACMode.OFF]
     _attr_should_poll = False
     _attr_supported_features = (
-        ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE
+        ClimateEntityFeature.TARGET_TEMPERATURE
+        | ClimateEntityFeature.FAN_MODE
+        | ClimateEntityFeature.TURN_ON
+        | ClimateEntityFeature.TURN_OFF
     )
     _attr_target_temperature_step = 1
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
