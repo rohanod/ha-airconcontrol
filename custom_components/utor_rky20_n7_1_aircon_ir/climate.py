@@ -16,8 +16,9 @@ from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (
     CONF_DEFAULT_FAN_MODE,
-    CONF_DEFAULT_TEMPERATURE,
     CONF_DEFAULT_SWING_MODE,
+    CONF_DEFAULT_TEMPERATURE,
+    CONF_INFRARED_ENTITY_ID,
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
     CONF_REMOTE_ENTITY_ID,
@@ -32,7 +33,7 @@ from .const import (
     FAN_MODES,
     SWING_MODES,
 )
-from .ir import COMMAND_POWER_OFF, COMMAND_SET, encode_broadlink_base64
+from .ir import COMMAND_POWER_OFF, COMMAND_SET, encode_broadlink_base64, make_utor_command
 
 
 async def async_setup_entry(
@@ -64,18 +65,23 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         """Initialize the climate entity."""
         self.hass = hass
         self._entry = entry
-        self._attr_unique_id = f"{entry.data[CONF_REMOTE_ENTITY_ID]}_climate"
+        unique_src = entry.data.get(CONF_INFRARED_ENTITY_ID) or entry.data.get(
+            CONF_REMOTE_ENTITY_ID
+        )
+        self._attr_unique_id = f"{unique_src}_climate" if unique_src else entry.entry_id
         self._attr_name = entry.data[CONF_NAME]
         self._attr_fan_modes = FAN_MODES
         self._attr_min_temp = int(entry.data.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP))
         self._attr_max_temp = int(entry.data.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP))
-        self._remote_entity_id = entry.data[CONF_REMOTE_ENTITY_ID]
+        self._remote_entity_id = entry.data.get(CONF_REMOTE_ENTITY_ID)
+        self._infrared_entity_id = entry.data.get(CONF_INFRARED_ENTITY_ID)
         self._repeats = int(entry.data.get(CONF_REPEATS, DEFAULT_REPEATS))
         self._attr_hvac_mode = HVACMode.OFF
         self._attr_target_temperature = int(
             entry.data.get(CONF_DEFAULT_TEMPERATURE, DEFAULT_TEMPERATURE)
         )
         self._attr_fan_mode = entry.data.get(CONF_DEFAULT_FAN_MODE, DEFAULT_FAN_MODE)
+        # dashboard swing control per https://developers.home-assistant.io/docs/core/entity/climate/#swing-modes
         self._attr_swing_modes = SWING_MODES
         self._attr_swing_mode = entry.data.get(
             CONF_DEFAULT_SWING_MODE, DEFAULT_SWING_MODE
@@ -165,24 +171,55 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         self.async_write_ha_state()
 
     async def _async_send(self, command: str) -> None:
-        """Send the generated command through the configured remote entity."""
-        command_payload = encode_broadlink_base64(
-            command,
-            int(self._attr_target_temperature),
-            str(self._attr_fan_mode),
-            str(self._attr_swing_mode),
-        )
+        """Send via infrared emitter (official) or legacy remote (fallback).
 
-        service_data = {
-            ATTR_ENTITY_ID: self._remote_entity_id,
-            "command": command_payload,
-        }
-        if self._repeats > 1:
-            service_data["num_repeats"] = self._repeats
+        Uses ``infrared`` when ``infrared_entity_id`` is configured, otherwise
+        ``remote.send_command``. When both are configured, sends via infrared
+        (and also via remote for transition — remove remote later).
+        """
+        # Infrared path (official HA 2026.4+)
+        if self._infrared_entity_id:
+            try:
+                from homeassistant.components import infrared
 
-        await self.hass.services.async_call(
-            "remote",
-            "send_command",
-            service_data,
-            blocking=True,
-        )
+                cmd = make_utor_command(
+                    command,
+                    int(self._attr_target_temperature),
+                    str(self._attr_fan_mode),
+                    str(self._attr_swing_mode),
+                )
+                # infrared-protocols repeat_count: 0 = single shot
+                cmd.repeat_count = max(0, self._repeats - 1)
+                await infrared.async_send_command(
+                    self.hass, self._infrared_entity_id, cmd
+                )
+                # dual-send during transition: also via remote if configured
+                if not self._remote_entity_id:
+                    return
+            except Exception as err:  # noqa: BLE001
+                if not self._remote_entity_id:
+                    raise
+                # fall through to legacy remote on infrared failure
+
+        if self._remote_entity_id:
+            command_payload = encode_broadlink_base64(
+                command,
+                int(self._attr_target_temperature),
+                str(self._attr_fan_mode),
+                str(self._attr_swing_mode),
+            )
+            service_data = {
+                ATTR_ENTITY_ID: self._remote_entity_id,
+                "command": command_payload,
+            }
+            if self._repeats > 1:
+                service_data["num_repeats"] = self._repeats
+            await self.hass.services.async_call(
+                "remote",
+                "send_command",
+                service_data,
+                blocking=True,
+            )
+            return
+
+        raise ValueError("No infrared or remote entity configured")

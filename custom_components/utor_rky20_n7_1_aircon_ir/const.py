@@ -7,6 +7,7 @@ CONF_DEFAULT_TEMPERATURE = "default_temperature"
 CONF_MAX_TEMP = "max_temp"
 CONF_MIN_TEMP = "min_temp"
 CONF_REMOTE_ENTITY_ID = "remote_entity_id"
+CONF_INFRARED_ENTITY_ID = "infrared_entity_id"
 CONF_REPEATS = "repeats"
 
 DEFAULT_FAN_MODE = "low"
