@@ -17,6 +17,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from .const import (
     CONF_DEFAULT_FAN_MODE,
     CONF_DEFAULT_TEMPERATURE,
+    CONF_DEFAULT_SWING_MODE,
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
     CONF_REMOTE_ENTITY_ID,
@@ -25,9 +26,11 @@ from .const import (
     DEFAULT_MAX_TEMP,
     DEFAULT_MIN_TEMP,
     DEFAULT_REPEATS,
+    DEFAULT_SWING_MODE,
     DEFAULT_TEMPERATURE,
     DOMAIN,
     FAN_MODES,
+    SWING_MODES,
 )
 from .ir import COMMAND_POWER_OFF, COMMAND_SET, encode_broadlink_base64
 
@@ -50,6 +53,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
     _attr_supported_features = (
         ClimateEntityFeature.TARGET_TEMPERATURE
         | ClimateEntityFeature.FAN_MODE
+        | ClimateEntityFeature.SWING_MODE
         | ClimateEntityFeature.TURN_ON
         | ClimateEntityFeature.TURN_OFF
     )
@@ -72,6 +76,10 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
             entry.data.get(CONF_DEFAULT_TEMPERATURE, DEFAULT_TEMPERATURE)
         )
         self._attr_fan_mode = entry.data.get(CONF_DEFAULT_FAN_MODE, DEFAULT_FAN_MODE)
+        self._attr_swing_modes = SWING_MODES
+        self._attr_swing_mode = entry.data.get(
+            CONF_DEFAULT_SWING_MODE, DEFAULT_SWING_MODE
+        )
 
     @property
     def device_info(self):
@@ -102,6 +110,10 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         if restored_fan_mode in FAN_MODES:
             self._attr_fan_mode = restored_fan_mode
 
+        restored_swing = last_state.attributes.get("swing_mode")
+        if restored_swing in SWING_MODES:
+            self._attr_swing_mode = restored_swing
+
     async def async_set_temperature(self, **kwargs) -> None:
         """Set target temperature and send a cool command when active."""
         if ATTR_TEMPERATURE not in kwargs:
@@ -118,6 +130,15 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
             raise ValueError(f"Unsupported fan mode: {fan_mode}")
 
         self._attr_fan_mode = fan_mode
+        if self._attr_hvac_mode == HVACMode.COOL:
+            await self._async_send(COMMAND_SET)
+        self.async_write_ha_state()
+
+    async def async_set_swing_mode(self, swing_mode: str) -> None:
+        """Set swing on/off and send a cool command when active."""
+        if swing_mode not in SWING_MODES:
+            raise ValueError(f"Unsupported swing mode: {swing_mode}")
+        self._attr_swing_mode = swing_mode
         if self._attr_hvac_mode == HVACMode.COOL:
             await self._async_send(COMMAND_SET)
         self.async_write_ha_state()
@@ -149,6 +170,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
             command,
             int(self._attr_target_temperature),
             str(self._attr_fan_mode),
+            str(self._attr_swing_mode),
         )
 
         service_data = {

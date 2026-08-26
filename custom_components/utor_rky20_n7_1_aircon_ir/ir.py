@@ -7,8 +7,12 @@ import base64
 COMMAND_POWER_OFF = "power_off"
 COMMAND_SET = "set"
 
+# swing confirmed 2026-05-28 via learn_swing at 22C high: byte3 0x10 (C5->D5)
+SWING_BYTE = 3
+SWING_BIT = 0x10
 
-def logical_bytes(command: str, temperature: int, power: str) -> list[int]:
+
+def logical_bytes(command: str, temperature: int, power: str, swing: str = "off") -> list[int]:
     """Return the six logical bytes for a command."""
     encoded_temperature = 0xEF - temperature
     if not 0 <= encoded_temperature <= 0xFF:
@@ -28,7 +32,12 @@ def logical_bytes(command: str, temperature: int, power: str) -> list[int]:
     elif power != "low":
         raise ValueError("power must be low or high")
 
-    return [0xFF, 0xFE, state, command_byte, encoded_temperature, 0x5A]
+    logical = [0xFF, 0xFE, state, command_byte, encoded_temperature, 0x5A]
+    if swing == "on":
+        logical[SWING_BYTE] |= SWING_BIT
+    elif swing != "off":
+        raise ValueError("swing must be on or off")
+    return logical
 
 
 def wire_bytes(logical: list[int]) -> list[int]:
@@ -55,7 +64,7 @@ def encode_broadlink_packet(logical: list[int]) -> bytes:
     return bytes(packet)
 
 
-def encode_broadlink_base64(command: str, temperature: int, power: str) -> str:
+def encode_broadlink_base64(command: str, temperature: int, power: str, swing: str = "off") -> str:
     """Return a Home Assistant Broadlink remote b64 command string."""
-    packet = encode_broadlink_packet(logical_bytes(command, temperature, power))
+    packet = encode_broadlink_packet(logical_bytes(command, temperature, power, swing))
     return f"b64:{base64.b64encode(packet).decode('ascii')}"
