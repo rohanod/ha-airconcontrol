@@ -1,6 +1,6 @@
 """Constants for the Go-On UTOR-RKY20-N7-1 Aircon IR integration."""
 
-DOMAIN = "utor_rky20_n7_1_aircon_ir"
+DOMAIN = "aircon_ir"
 
 CONF_DEFAULT_FAN_MODE = "default_fan_mode"
 CONF_DEFAULT_TEMPERATURE = "default_temperature"

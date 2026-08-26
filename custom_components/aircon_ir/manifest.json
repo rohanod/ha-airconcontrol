@@ -1,5 +1,5 @@
 {
-  "domain": "utor_rky20_n7_1_aircon_ir",
+  "domain": "aircon_ir",
   "name": "Go-On UTOR-RKY20-N7-1 Aircon IR",
   "codeowners": [],
   "config_flow": true,

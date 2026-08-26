@@ -23,7 +23,7 @@ This integration does not import or use the Python `broadlink` package. It sends
 
 ### Manual
 
-Copy `custom_components/utor_rky20_n7_1_aircon_ir` into your Home Assistant `custom_components` directory and restart Home Assistant.
+Copy `custom_components/aircon_ir` into your Home Assistant `custom_components` directory and restart Home Assistant.
 
 ## Configuration
 
