@@ -3,12 +3,13 @@
     "step": {
       "user": {
         "title": "Go-On UTOR-RKY20-N7-1 Aircon IR",
-        "description": "Configure the climate entity that sends generated IR commands through a Home Assistant remote entity.",
+        "description": "Configure a climate entity that sends commands through a Home Assistant infrared emitter.",
         "data": {
           "name": "Name",
-          "remote_entity_id": "Remote entity",
+          "infrared_entity_id": "Infrared emitter entity",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
+          "default_swing_mode": "Default swing mode",
           "min_temp": "Minimum temperature",
           "max_temp": "Maximum temperature",
           "repeats": "Repeats"
@@ -20,7 +21,26 @@
       "default_temperature_out_of_range": "The default temperature must be within the configured range."
     },
     "abort": {
-      "already_configured": "This remote entity is already configured."
+      "already_configured": "This infrared emitter is already configured.",
+      "no_infrared_entities": "No infrared entities found — set up an infrared emitter first."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Aircon IR options",
+        "description": "Edit the climate entity.",
+        "data": {
+          "name": "Name",
+          "infrared_entity_id": "Infrared emitter entity",
+          "default_temperature": "Default temperature",
+          "default_fan_mode": "Default fan mode",
+          "default_swing_mode": "Default swing mode",
+          "min_temp": "Minimum temperature",
+          "max_temp": "Maximum temperature",
+          "repeats": "Repeats"
+        }
+      }
     }
   }
 }

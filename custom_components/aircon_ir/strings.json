@@ -3,11 +3,10 @@
     "step": {
       "user": {
         "title": "Go-On UTOR-RKY20-N7-1 Aircon IR",
-        "description": "Configure a climate entity. Preferred: Infrared emitter (HA 2026.4+). Legacy: Broadlink remote — keep both during transition, remove remote later.",
+        "description": "Configure a climate entity that sends commands through a Home Assistant infrared emitter.",
         "data": {
           "name": "Name",
-          "remote_entity_id": "Remote entity (legacy, optional if infrared set)",
-          "infrared_entity_id": "Infrared emitter entity (preferred)",
+          "infrared_entity_id": "Infrared emitter entity",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
           "default_swing_mode": "Default swing mode",
@@ -19,12 +18,29 @@
     },
     "error": {
       "invalid_temperature_range": "The minimum temperature must be lower than the maximum temperature.",
-      "default_temperature_out_of_range": "The default temperature must be within the configured range.",
-      "need_one_entity": "Select at least one: Infrared emitter or Remote entity."
+      "default_temperature_out_of_range": "The default temperature must be within the configured range."
     },
     "abort": {
-      "already_configured": "This emitter/remote is already configured.",
-      "no_infrared_entities": "No infrared entities found — set up an ESPHome/Broadlink infrared emitter first or use legacy remote."
+      "already_configured": "This infrared emitter is already configured.",
+      "no_infrared_entities": "No infrared entities found — set up an infrared emitter first."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Aircon IR options",
+        "description": "Edit the climate entity.",
+        "data": {
+          "name": "Name",
+          "infrared_entity_id": "Infrared emitter entity",
+          "default_temperature": "Default temperature",
+          "default_fan_mode": "Default fan mode",
+          "default_swing_mode": "Default swing mode",
+          "min_temp": "Minimum temperature",
+          "max_temp": "Maximum temperature",
+          "repeats": "Repeats"
+        }
+      }
     }
   }
 }
