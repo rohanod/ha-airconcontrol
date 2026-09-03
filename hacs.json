@@ -1,4 +1,5 @@
 {
   "name": "Go-On UTOR-RKY20-N7-1 Aircon IR",
-  "render_readme": true
+  "render_readme": true,
+  "homeassistant": "2026.4.0"
 }
