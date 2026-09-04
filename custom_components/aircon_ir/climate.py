@@ -60,7 +60,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         self.hass = hass
         self._entry = entry
         cfg = {**entry.data, **entry.options}
-        self._attr_unique_id = f"{cfg[CONF_INFRARED_ENTITY_ID]}_climate"
+        self._attr_unique_id = f"{entry.entry_id}_climate"
         self._attr_name = cfg[CONF_NAME]
         self._attr_fan_modes = FAN_MODES
         self._attr_min_temp = int(cfg.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP))

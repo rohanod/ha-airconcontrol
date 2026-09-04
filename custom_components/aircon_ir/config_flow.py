@@ -33,7 +33,7 @@ from .const import (
 
 
 class AirconIrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    VERSION = 2
+    VERSION = 3
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -103,9 +103,7 @@ class AirconIrOptionsFlowHandler(_BaseOptionsFlow):  # type: ignore[misc]
             elif not min_temp <= default_temperature <= max_temp:
                 errors[CONF_DEFAULT_TEMPERATURE] = "default_temperature_out_of_range"
             else:
-                new_data = {**entry.data, **user_input}
-                self.hass.config_entries.async_update_entry(entry, data=new_data)
-                return self.async_create_entry(title="", data={})
+                return self.async_create_entry(title="", data=user_input)
 
         schema_dict: dict[Any, Any] = {
             vol.Required(CONF_NAME, default=current.get(CONF_NAME, DEFAULT_NAME)): str,
