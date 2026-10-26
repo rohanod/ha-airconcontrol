@@ -6,7 +6,7 @@ This integration does not import or use the Python `broadlink` package. It sends
 
 ## Features
 
-- Climate entity with `cool` and `off` HVAC modes.
+- Climate entity with `cool`, `dry` (dehumidify) and `off` HVAC modes. Dry only uses swing; temperature and fan are ignored while in dry.
 - Target temperature commands generated from `0xEF - temperature`.
 - Fan mode used as low/high power mode.
 - Stateful off command using the last restored or selected temperature and fan mode.
@@ -62,7 +62,12 @@ command:
 
 temperature:
   encoded_temp = 0xEF - temperature_celsius
+  0xBC = dry mode (fixed; dry always sends low fan)
+
+swing on: command |= 0x10
 ```
+
+Dry mode was decoded from captures made with the scripts in `dehumidify-decrypt/`.
 
 Each logical byte is transmitted followed by its bitwise inverse. The final packet is encoded as a Broadlink learned IR container and sent to Home Assistant as a `b64:` command.
 

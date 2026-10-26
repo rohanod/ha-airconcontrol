@@ -20,16 +20,30 @@ except ImportError:
 COMMAND_POWER_OFF = "power_off"
 COMMAND_SET = "set"
 
+MODE_COOL = "cool"
+MODE_DRY = "dry"
+
 SWING_BYTE = 3
 SWING_BIT = 0x10
+
+# Dry has no temperature or fan on the remote: it sends this fixed temperature byte and low fan.
+DRY_TEMPERATURE_BYTE = 0xBC
 
 _BROADLINK_TICK_US = 269 / 8192 * 1000
 
 
-def logical_bytes(command: str, temperature: int, power: str, swing: str = "off") -> list[int]:
-    encoded_temperature = 0xEF - temperature
-    if not 0 <= encoded_temperature <= 0xFF:
-        raise ValueError("temperature is outside the encodable range")
+def logical_bytes(
+    command: str, temperature: int, power: str, swing: str = "off", mode: str = MODE_COOL
+) -> list[int]:
+    if mode == MODE_DRY:
+        encoded_temperature = DRY_TEMPERATURE_BYTE
+        power = "low"
+    elif mode == MODE_COOL:
+        encoded_temperature = 0xEF - temperature
+        if not 0 <= encoded_temperature <= 0xFF:
+            raise ValueError("temperature is outside the encodable range")
+    else:
+        raise ValueError("mode must be cool or dry")
 
     if command == COMMAND_SET:
         state = 0xFD
@@ -86,17 +100,20 @@ class UtorCommand(InfraredCommand):
         temperature: int,
         power: str,
         swing: str = "off",
+        mode: str = MODE_COOL,
         *,
         modulation: int = 38000,
         repeat_count: int = 0,
     ) -> None:
         super().__init__(modulation=modulation, repeat_count=repeat_count)
-        self._logical = logical_bytes(command, temperature, power, swing)
+        self._logical = logical_bytes(command, temperature, power, swing, mode)
         self._timings = infrared_timings(self._logical)
 
     def get_raw_timings(self) -> list[int]:
         return list(self._timings)
 
 
-def make_utor_command(command: str, temperature: int, power: str, swing: str = "off") -> UtorCommand:
-    return UtorCommand(command, temperature, power, swing)
+def make_utor_command(
+    command: str, temperature: int, power: str, swing: str = "off", mode: str = MODE_COOL
+) -> UtorCommand:
+    return UtorCommand(command, temperature, power, swing, mode)

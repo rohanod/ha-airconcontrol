@@ -29,7 +29,7 @@ from .const import (
     FAN_MODES,
     SWING_MODES,
 )
-from .ir import COMMAND_POWER_OFF, COMMAND_SET, make_utor_command
+from .ir import COMMAND_POWER_OFF, COMMAND_SET, MODE_COOL, MODE_DRY, make_utor_command
 
 
 async def async_setup_entry(
@@ -46,7 +46,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
 
     _attr_has_entity_name = False
     _attr_temperature_unit = "°C"
-    _attr_hvac_modes = [HVACMode.OFF, HVACMode.COOL]
+    _attr_hvac_modes = [HVACMode.OFF, HVACMode.COOL, HVACMode.DRY]
     _attr_supported_features = (
         ClimateEntityFeature.TARGET_TEMPERATURE
         | ClimateEntityFeature.FAN_MODE
@@ -88,7 +88,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         if last_state is None:
             return
         hvac_mode = last_state.state
-        if hvac_mode in (HVACMode.OFF, HVACMode.COOL):
+        if hvac_mode in self._attr_hvac_modes:
             self._attr_hvac_mode = HVACMode(hvac_mode)
         target_temperature = last_state.attributes.get("temperature")
         if target_temperature is not None:
@@ -110,7 +110,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
             await self._async_send(COMMAND_POWER_OFF)
             self._attr_hvac_mode = HVACMode.OFF
         else:
-            self._attr_hvac_mode = HVACMode.COOL
+            self._attr_hvac_mode = hvac_mode
             await self._async_send(COMMAND_SET)
         self.async_write_ha_state()
 
@@ -135,18 +135,20 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         if swing_mode not in SWING_MODES:
             raise ValueError(f"Unsupported swing mode: {swing_mode}")
         self._attr_swing_mode = swing_mode
-        if self._attr_hvac_mode == HVACMode.COOL:
+        if self._attr_hvac_mode != HVACMode.OFF:
             await self._async_send(COMMAND_SET)
         self.async_write_ha_state()
 
     async def _async_send(self, command: str) -> None:
         from homeassistant.components import infrared
 
+        # Power off is stateful, so it also uses the mode the AC is leaving (dry off carries the dry byte).
         cmd = make_utor_command(
             command,
             int(self._attr_target_temperature),
             str(self._attr_fan_mode),
             str(self._attr_swing_mode),
+            MODE_DRY if self._attr_hvac_mode == HVACMode.DRY else MODE_COOL,
         )
         cmd.repeat_count = max(0, self._repeats - 1)
         await infrared.async_send_command(self.hass, self._infrared_entity_id, cmd)

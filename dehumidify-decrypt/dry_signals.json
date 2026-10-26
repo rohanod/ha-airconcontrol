@@ -1,0 +1,148 @@
+{
+  "schema": "rm4c-dry-v1",
+  "updated_at": "2026-10-25T15:32:10.112781+00:00",
+  "signals": [
+    {
+      "name": "cool_22_high",
+      "command": "set",
+      "mode": "cool",
+      "temperature_c": 22,
+      "power": "high",
+      "swing": "off",
+      "start": "COOL 23C fan high, swing off",
+      "press": "TEMP DOWN (to 22C)",
+      "learned_at": "2026-10-25T15:31:37.945251+00:00",
+      "broadlink_base64": "JgDIAMfyEjQSNBI1EjQSNBI1EjQSNBIREhESEhESEhESERIREhESNBI0EjUSNBI0EjUSNBI0EhIREhIREhESERIREhESERIREhESNBI1EjQSNBI1ETUSNBI1ERIREhESEhESERIREjQSERI0EhIREhESEjQSNBIREjUSERI0EjQSNRIREhESNBIRERISNRE1EhERNRI1EhESNBI0EhESERI1EhESERIREjQSERI1ETUSERE1EhESNRIREjQSERIREjQSEhE1EvMSAA0F",
+      "decoded": {
+        "logical_bytes_hex": [
+          "FF",
+          "FF",
+          "FC",
+          "C5",
+          "D9",
+          "5A"
+        ],
+        "data_bytes_lsb_hex": [
+          "FF",
+          "00",
+          "FF",
+          "00",
+          "FC",
+          "03",
+          "C5",
+          "3A",
+          "D9",
+          "26",
+          "5A",
+          "A5"
+        ],
+        "valid": true
+      }
+    },
+    {
+      "name": "dry_swing_off",
+      "command": "set",
+      "mode": "dry",
+      "swing": "off",
+      "start": "DRY, swing on",
+      "press": "SWING (turns it off)",
+      "learned_at": "2026-10-25T15:31:55.644547+00:00",
+      "broadlink_base64": "JgDIAMfyEjQSNRI0EjQSNRI0EjQSNBIREhESERISERISERIREhESNBI0EjQSNRI0EjQSNRI0EhESERIREhESERIREhESERIREhESERI0EjUSNBI0EjQSNRI0EjQSERIREhESEhEREjUSERI0EhESERIREhESNBIREjUSERI0EjQSNRI0EhESERIREjQRNhE1EjQSERI0EjUSNBIREhESERIREjQSERIREjUSERI0EjQSERI1ERIRNRESETUREhESETYREhI0EvMRAA0F",
+      "decoded": {
+        "logical_bytes_hex": [
+          "FF",
+          "FF",
+          "F8",
+          "85",
+          "BC",
+          "5A"
+        ],
+        "data_bytes_lsb_hex": [
+          "FF",
+          "00",
+          "FF",
+          "00",
+          "F8",
+          "07",
+          "85",
+          "7A",
+          "BC",
+          "43",
+          "5A",
+          "A5"
+        ],
+        "valid": true
+      }
+    },
+    {
+      "name": "dry_swing_on",
+      "command": "set",
+      "mode": "dry",
+      "swing": "on",
+      "start": "DRY, swing off",
+      "press": "SWING (turns it on)",
+      "learned_at": "2026-10-25T15:32:00.731086+00:00",
+      "broadlink_base64": "JgDIAMbyEzQSNBI0EjUSNBI0EjUSNBIREhESERIREhESERIREhESNBI1EjQSNBI0EjUSNBI0EhESERIREhESERIREhESERIREhESERI1EjQSNBI1EjQSNBI1ETUSERIREhESERIREjQSERI0EhESNRIREhESNBIREjQSERI1EhESNBI0EhESERIREjURNRI0EjQSERI1EjQSNBIREhESERIREjUREhESETUSERI0EjQSEhE1EhESNBIREjQSERIREjUSERI0EvMSAA0F",
+      "decoded": {
+        "logical_bytes_hex": [
+          "FF",
+          "FF",
+          "F8",
+          "95",
+          "BC",
+          "5A"
+        ],
+        "data_bytes_lsb_hex": [
+          "FF",
+          "00",
+          "FF",
+          "00",
+          "F8",
+          "07",
+          "95",
+          "6A",
+          "BC",
+          "43",
+          "5A",
+          "A5"
+        ],
+        "valid": true
+      }
+    },
+    {
+      "name": "off_from_dry",
+      "command": "power_off",
+      "mode": "dry",
+      "swing": "off",
+      "start": "DRY, swing off, AC on",
+      "press": "POWER (turns it off)",
+      "learned_at": "2026-10-25T15:32:10.112005+00:00",
+      "broadlink_base64": "JgDIAMfyEjQSNBI1EjQSNBI0EjUSNBIREhESERIREhESERIREhESNBI1EjQSNBI1EjQSNBI0EhESEhESERIREhESERIREhE1EjQSNBI1EjQSNBI1EjQSERIREhESERIREhESERIREjQSNBI1EhESERIREhESNBIREhESERI0EjUSNBI0ERISERIREjUSNBI0EjUSERI0EjQSNRIREhEREhIRETYRERIREjUSERI0EjQSERI1ERISNBIREjUREhESETUREhE1EvMRAA0F",
+      "decoded": {
+        "logical_bytes_hex": [
+          "FF",
+          "FF",
+          "FF",
+          "87",
+          "BC",
+          "5A"
+        ],
+        "data_bytes_lsb_hex": [
+          "FF",
+          "00",
+          "FF",
+          "00",
+          "FF",
+          "00",
+          "87",
+          "78",
+          "BC",
+          "43",
+          "5A",
+          "A5"
+        ],
+        "valid": true
+      }
+    }
+  ]
+}
