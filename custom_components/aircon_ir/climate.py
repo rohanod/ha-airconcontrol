@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+import json
 
 from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature, HVACMode
 from homeassistant.config_entries import ConfigEntry
@@ -19,6 +20,7 @@ from .const import (
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
     CONF_REPEATS,
+    CONF_ZIGBEE2MQTT_TOPIC,
     DEFAULT_FAN_MODE,
     DEFAULT_MAX_TEMP,
     DEFAULT_MIN_TEMP,
@@ -29,7 +31,7 @@ from .const import (
     FAN_MODES,
     SWING_MODES,
 )
-from .ir import COMMAND_POWER_OFF, COMMAND_SET, MODE_COOL, MODE_DRY, make_utor_command
+from .ir import COMMAND_POWER_OFF, COMMAND_SET, MODE_COOL, MODE_DRY, make_utor_command, broadlink_base64
 
 
 async def async_setup_entry(
@@ -67,6 +69,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         self._attr_max_temp = int(cfg.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP))
         self._infrared_entity_id = cfg[CONF_INFRARED_ENTITY_ID]
         self._repeats = int(cfg.get(CONF_REPEATS, DEFAULT_REPEATS))
+        self._zigbee2mqtt_topic = str(cfg.get(CONF_ZIGBEE2MQTT_TOPIC) or '').strip()
         self._attr_hvac_mode = HVACMode.OFF
         self._attr_target_temperature = int(cfg.get(CONF_DEFAULT_TEMPERATURE, DEFAULT_TEMPERATURE))
         self._attr_fan_mode = cfg.get(CONF_DEFAULT_FAN_MODE, DEFAULT_FAN_MODE)
@@ -150,5 +153,15 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
             str(self._attr_swing_mode),
             MODE_DRY if self._attr_hvac_mode == HVACMode.DRY else MODE_COOL,
         )
-        cmd.repeat_count = max(0, self._repeats - 1)
-        await infrared.async_send_command(self.hass, self._infrared_entity_id, cmd)
+        if self._zigbee2mqtt_topic:
+            code = broadlink_base64(cmd._logical, self._repeats)
+            await self.hass.services.async_call(
+                "mqtt", "publish",
+                {"topic": self._zigbee2mqtt_topic,
+                 "payload": json.dumps({"ir_code_to_send": code}),
+                 "qos": 0, "retain": False},
+                blocking=True,
+            )
+        else:
+            cmd.repeat_count = max(0, self._repeats - 1)
+            await infrared.async_send_command(self.hass, self._infrared_entity_id, cmd)
