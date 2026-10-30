@@ -74,3 +74,13 @@ Each logical byte is transmitted followed by its bitwise inverse. The final pack
 ## Notes
 
 The off command is stateful. Home Assistant restores the previous climate state after restart when possible. If no previous state exists, the integration uses the configured default temperature and fan mode for `off`.
+
+## HOBEIAN ZG-IR01 battery IR
+
+For the ZG-IR01, configure the optional **Zigbee2MQTT MQTT set topic**
+to `zigbee2mqtt/Battery IR/set` (adjust for your actual friendly name).
+This bypasses the raw timings converter while retaining native `infrared`
+support if the field is left blank. The integration sends Broadlink-encoded
+commands to `ir_code_to_send` with correctly scaled durations. The Home
+Assistant MQTT integration must be available, and the IR device must be in
+range. A successful publish does not confirm that the air conditioner received it.
