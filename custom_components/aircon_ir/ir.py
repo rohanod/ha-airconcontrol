@@ -117,3 +117,26 @@ def make_utor_command(
     command: str, temperature: int, power: str, swing: str = "off", mode: str = MODE_COOL
 ) -> UtorCommand:
     return UtorCommand(command, temperature, power, swing, mode)
+
+def broadlink_base64(logical: list[int], repeats: int = 1) -> str:
+    """Encode an IR command as a Broadlink packet for a ZG-IR01."""
+    import base64
+
+    encoded = bytearray()
+    for timing in infrared_timings(logical):
+        ticks = max(1, round(abs(timing) / _BROADLINK_TICK_US))
+        if ticks > 65535:
+            raise ValueError("IR pulse too long for Broadlink")
+        if ticks < 256:
+            encoded.append(ticks)
+        else:
+            encoded.extend((0, ticks >> 8, ticks & 255))
+    if len(encoded) > 65535:
+        raise ValueError("IR packet too long")
+    packet = bytearray((0x26, max(0, min(255, repeats - 1)),
+                        len(encoded) & 255, len(encoded) >> 8))
+    packet.extend(encoded)
+    packet.extend((0x0D, 0x05))
+    while (len(packet) + 4) % 16:
+        packet.append(0)
+    return base64.b64encode(packet).decode("ascii")

@@ -19,6 +19,7 @@ from .const import (
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
     CONF_REPEATS,
+    CONF_ZIGBEE2MQTT_TOPIC,
     DEFAULT_FAN_MODE,
     DEFAULT_MAX_TEMP,
     DEFAULT_MIN_TEMP,
@@ -55,6 +56,7 @@ class AirconIrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         schema_dict: dict[Any, Any] = {
             vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
+            vol.Optional(CONF_ZIGBEE2MQTT_TOPIC, default=''): str,
             vol.Required(CONF_INFRARED_ENTITY_ID): selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="infrared")
             ),
@@ -107,6 +109,7 @@ class AirconIrOptionsFlowHandler(_BaseOptionsFlow):  # type: ignore[misc]
 
         schema_dict: dict[Any, Any] = {
             vol.Required(CONF_NAME, default=current.get(CONF_NAME, DEFAULT_NAME)): str,
+            vol.Optional(CONF_ZIGBEE2MQTT_TOPIC, default=current.get(CONF_ZIGBEE2MQTT_TOPIC, '')): str,
             vol.Required(CONF_INFRARED_ENTITY_ID, default=current.get(CONF_INFRARED_ENTITY_ID)): selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="infrared")
             ),

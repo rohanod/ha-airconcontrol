@@ -7,6 +7,7 @@
         "data": {
           "name": "Name",
           "infrared_entity_id": "Infrared emitter entity",
+          "zigbee2mqtt_topic": "Zigbee2MQTT MQTT set topic (optional)",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
           "default_swing_mode": "Default swing mode",
@@ -33,6 +34,7 @@
         "data": {
           "name": "Name",
           "infrared_entity_id": "Infrared emitter entity",
+          "zigbee2mqtt_topic": "Zigbee2MQTT MQTT set topic (optional)",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
           "default_swing_mode": "Default swing mode",
