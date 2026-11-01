@@ -45,19 +45,35 @@ class AirconIrConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             min_temp = user_input[CONF_MIN_TEMP]
             max_temp = user_input[CONF_MAX_TEMP]
             default_temperature = user_input[CONF_DEFAULT_TEMPERATURE]
-            if min_temp >= max_temp:
+            # A cleared optional selector is omitted by Home Assistant.
+            # Store an explicit empty value so options override entry.data.
+            user_input[CONF_INFRARED_ENTITY_ID] = (
+                user_input.get(CONF_INFRARED_ENTITY_ID) or ""
+            )
+            user_input[CONF_ZIGBEE2MQTT_TOPIC] = (
+                user_input.get(CONF_ZIGBEE2MQTT_TOPIC) or ""
+            ).strip()
+            if not (
+                user_input[CONF_INFRARED_ENTITY_ID]
+                or user_input[CONF_ZIGBEE2MQTT_TOPIC]
+            ):
+                errors["base"] = "transmitter_required"
+            elif min_temp >= max_temp:
                 errors["base"] = "invalid_temperature_range"
             elif not min_temp <= default_temperature <= max_temp:
                 errors[CONF_DEFAULT_TEMPERATURE] = "default_temperature_out_of_range"
             else:
-                await self.async_set_unique_id(user_input[CONF_INFRARED_ENTITY_ID])
+                await self.async_set_unique_id(
+                    user_input[CONF_INFRARED_ENTITY_ID]
+                    or f"mqtt:{user_input[CONF_ZIGBEE2MQTT_TOPIC]}"
+                )
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
 
         schema_dict: dict[Any, Any] = {
             vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
-            vol.Optional(CONF_ZIGBEE2MQTT_TOPIC, default=''): str,
-            vol.Required(CONF_INFRARED_ENTITY_ID): selector.EntitySelector(
+            vol.Optional(CONF_ZIGBEE2MQTT_TOPIC): str,
+            vol.Optional(CONF_INFRARED_ENTITY_ID): selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="infrared")
             ),
             vol.Required(CONF_DEFAULT_TEMPERATURE, default=DEFAULT_TEMPERATURE): selector.NumberSelector(
@@ -100,17 +116,52 @@ class AirconIrOptionsFlowHandler(_BaseOptionsFlow):  # type: ignore[misc]
             min_temp = user_input[CONF_MIN_TEMP]
             max_temp = user_input[CONF_MAX_TEMP]
             default_temperature = user_input[CONF_DEFAULT_TEMPERATURE]
-            if min_temp >= max_temp:
+            # A cleared optional selector is omitted by Home Assistant.
+            # Store an explicit empty value so options override entry.data.
+            user_input[CONF_INFRARED_ENTITY_ID] = (
+                user_input.get(CONF_INFRARED_ENTITY_ID) or ""
+            )
+            user_input[CONF_ZIGBEE2MQTT_TOPIC] = (
+                user_input.get(CONF_ZIGBEE2MQTT_TOPIC) or ""
+            ).strip()
+            current.update(user_input)
+            if not (
+                user_input[CONF_INFRARED_ENTITY_ID]
+                or user_input[CONF_ZIGBEE2MQTT_TOPIC]
+            ):
+                errors["base"] = "transmitter_required"
+            elif min_temp >= max_temp:
                 errors["base"] = "invalid_temperature_range"
             elif not min_temp <= default_temperature <= max_temp:
                 errors[CONF_DEFAULT_TEMPERATURE] = "default_temperature_out_of_range"
             else:
                 return self.async_create_entry(title="", data=user_input)
 
+        # Suggested values prepopulate the form without making an optional
+        # field reappear after the user has cleared it.
+        emitter_value = current.get(CONF_INFRARED_ENTITY_ID) or ""
+        mqtt_value = current.get(CONF_ZIGBEE2MQTT_TOPIC) or ""
+        emitter_marker = (
+            vol.Optional(
+                CONF_INFRARED_ENTITY_ID,
+                description={"suggested_value": emitter_value},
+            )
+            if emitter_value
+            else vol.Optional(CONF_INFRARED_ENTITY_ID)
+        )
+        mqtt_marker = (
+            vol.Optional(
+                CONF_ZIGBEE2MQTT_TOPIC,
+                description={"suggested_value": mqtt_value},
+            )
+            if mqtt_value
+            else vol.Optional(CONF_ZIGBEE2MQTT_TOPIC)
+        )
+
         schema_dict: dict[Any, Any] = {
             vol.Required(CONF_NAME, default=current.get(CONF_NAME, DEFAULT_NAME)): str,
-            vol.Optional(CONF_ZIGBEE2MQTT_TOPIC, default=current.get(CONF_ZIGBEE2MQTT_TOPIC, '')): str,
-            vol.Required(CONF_INFRARED_ENTITY_ID, default=current.get(CONF_INFRARED_ENTITY_ID)): selector.EntitySelector(
+            mqtt_marker: str,
+            emitter_marker: selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="infrared")
             ),
             vol.Required(CONF_DEFAULT_TEMPERATURE, default=current.get(CONF_DEFAULT_TEMPERATURE, DEFAULT_TEMPERATURE)): selector.NumberSelector(

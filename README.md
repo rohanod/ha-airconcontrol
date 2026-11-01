@@ -2,7 +2,7 @@
 
 Home Assistant custom climate integration for a Go-On UTOR-RKY20-N7-1 cool-only air conditioner controlled by generated Broadlink IR commands.
 
-This integration does not import or use the Python `broadlink` package. It sends generated Broadlink learned-code payloads through Home Assistant's existing `remote.send_command` service, so it works with the proper Broadlink remote entity created by Home Assistant.
+This integration does not require the Python `broadlink` package. It sends generated IR commands through either a Home Assistant `infrared.*` emitter or a Zigbee2MQTT MQTT topic (for the HOBEIAN ZG-IR01).
 
 ## Features
 
@@ -27,13 +27,13 @@ Copy `custom_components/aircon_ir` into your Home Assistant `custom_components` 
 
 ## Configuration
 
-Before adding this integration, configure your Broadlink device in Home Assistant so you have a `remote.*` entity, for example `remote.rm4c_pro`.
+Before adding this integration, configure either a Home Assistant `infrared.*` emitter or a Zigbee2MQTT device with an `ir_code_to_send` MQTT feature.
 
 Then go to:
 
 `Settings` -> `Devices & services` -> `Add integration` -> `Go-On UTOR-RKY20-N7-1 Aircon IR`
 
-Choose the Broadlink remote entity and defaults:
+Choose at least one transmitter and your defaults:
 
 - Default temperature: used after first setup and as the off context until state is restored.
 - Default fan mode: `low` or `high`.
@@ -77,10 +77,15 @@ The off command is stateful. Home Assistant restores the previous climate state 
 
 ## HOBEIAN ZG-IR01 battery IR
 
-For the ZG-IR01, configure the optional **Zigbee2MQTT MQTT set topic**
+For the ZG-IR01, leave **Infrared emitter entity** empty and set **Zigbee2MQTT MQTT set topic**
 to `zigbee2mqtt/Battery IR/set` (adjust for your actual friendly name).
 This bypasses the raw timings converter while retaining native `infrared`
 support if the field is left blank. The integration sends Broadlink-encoded
 commands to `ir_code_to_send` with correctly scaled durations. The Home
 Assistant MQTT integration must be available, and the IR device must be in
 range. A successful publish does not confirm that the air conditioner received it.
+
+The emitter selector is optional in both setup and integration options. Clearing it
+saves an explicitly empty value, including for existing configurations. A native
+`infrared.*` emitter is only required when the Zigbee2MQTT MQTT set topic is empty.
+If both are provided, MQTT takes precedence.

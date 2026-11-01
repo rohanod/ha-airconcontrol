@@ -11,6 +11,7 @@ from homeassistant.const import ATTR_TEMPERATURE, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.exceptions import HomeAssistantError
 
 from .const import (
     CONF_DEFAULT_FAN_MODE,
@@ -67,7 +68,7 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
         self._attr_fan_modes = FAN_MODES
         self._attr_min_temp = int(cfg.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP))
         self._attr_max_temp = int(cfg.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP))
-        self._infrared_entity_id = cfg[CONF_INFRARED_ENTITY_ID]
+        self._infrared_entity_id = cfg.get(CONF_INFRARED_ENTITY_ID) or None
         self._repeats = int(cfg.get(CONF_REPEATS, DEFAULT_REPEATS))
         self._zigbee2mqtt_topic = str(cfg.get(CONF_ZIGBEE2MQTT_TOPIC) or '').strip()
         self._attr_hvac_mode = HVACMode.OFF
@@ -162,6 +163,10 @@ class AirconIrClimate(ClimateEntity, RestoreEntity):
                  "qos": 0, "retain": False},
                 blocking=True,
             )
-        else:
+        elif self._infrared_entity_id:
             cmd.repeat_count = max(0, self._repeats - 1)
             await infrared.async_send_command(self.hass, self._infrared_entity_id, cmd)
+        else:
+            raise HomeAssistantError(
+                "Configure either an infrared emitter or a Zigbee2MQTT MQTT topic"
+            )
