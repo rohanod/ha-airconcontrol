@@ -3,10 +3,10 @@
     "step": {
       "user": {
         "title": "Go-On UTOR-RKY20-N7-1 Aircon IR",
-        "description": "Configure a climate entity that sends commands through a Home Assistant infrared emitter.",
+        "description": "Select an infrared emitter, enter a Zigbee2MQTT MQTT set topic, or both (MQTT takes priority).",
         "data": {
           "name": "Name",
-          "infrared_entity_id": "Infrared emitter entity",
+          "infrared_entity_id": "Infrared emitter entity (optional)",
           "zigbee2mqtt_topic": "Zigbee2MQTT MQTT set topic (optional)",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
@@ -19,7 +19,8 @@
     },
     "error": {
       "invalid_temperature_range": "The minimum temperature must be lower than the maximum temperature.",
-      "default_temperature_out_of_range": "The default temperature must be within the configured range."
+      "default_temperature_out_of_range": "The default temperature must be within the configured range.",
+      "transmitter_required": "Select an infrared emitter or enter a Zigbee2MQTT MQTT topic."
     },
     "abort": {
       "already_configured": "This infrared emitter is already configured.",
@@ -30,10 +31,10 @@
     "step": {
       "init": {
         "title": "Aircon IR options",
-        "description": "Edit the climate entity.",
+        "description": "Select an infrared emitter or use the MQTT topic. You can clear either field, but not both.",
         "data": {
           "name": "Name",
-          "infrared_entity_id": "Infrared emitter entity",
+          "infrared_entity_id": "Infrared emitter entity (optional)",
           "zigbee2mqtt_topic": "Zigbee2MQTT MQTT set topic (optional)",
           "default_temperature": "Default temperature",
           "default_fan_mode": "Default fan mode",
@@ -43,6 +44,11 @@
           "repeats": "Repeats"
         }
       }
+    },
+    "error": {
+      "transmitter_required": "Select an infrared emitter or enter a Zigbee2MQTT MQTT topic.",
+      "invalid_temperature_range": "The minimum temperature must be lower than the maximum temperature.",
+      "default_temperature_out_of_range": "The default temperature must be within the configured range."
     }
   }
 }
